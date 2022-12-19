@@ -1,3 +1,16 @@
+# Copy-paste clipboard
+
+`vars.tf`
+```hcl
+locals {
+    env_name = "terraform-prework-basic"
+    cluster_name = "simple-basic-cluster"
+    description = "Resource created for 'Simple Basic Cluster Terraform Pre-work'"
+}
+```
+
+`main.tf`
+```hcl
 terraform {
     required_providers {
         confluent = {
@@ -14,12 +27,15 @@ terraform {
         }
     }
 }
-
+```
+```hcl
 provider "confluent" {
     # Set through env vars as:
     # CONFLUENT_CLOUD_API_KEY="CLOUD-KEY"
     # CONFLUENT_CLOUD_API_SECRET="CLOUD-SECRET"
 }
+```
+```hcl 
 # --------------------------------------------------------
 # This 'random_id' will make whatever you create (names, etc)
 # unique in your account.
@@ -27,6 +43,8 @@ provider "confluent" {
 resource "random_id" "id" {
     byte_length = 4
 }
+```
+```hcl
 # -------------------------------------------------------
 # Environment
 # -------------------------------------------------------
@@ -36,6 +54,8 @@ resource "confluent_environment" "simple_env" {
         prevent_destroy = false
     }
 }
+```
+```hcl 
 # --------------------------------------------------------
 # Schema Registry
 # --------------------------------------------------------
@@ -56,6 +76,8 @@ resource "confluent_schema_registry_cluster" "simple_sr_cluster" {
         prevent_destroy = false
     }
 }
+```
+```hcl
 # --------------------------------------------------------
 # Cluster
 # --------------------------------------------------------
@@ -72,6 +94,8 @@ resource "confluent_kafka_cluster" "simple_cluster" {
         prevent_destroy = false
     }
 }
+```
+```hcl
 # --------------------------------------------------------
 # Service Accounts
 # --------------------------------------------------------
@@ -87,6 +111,8 @@ resource "confluent_service_account" "clients" {
     display_name = "client-${random_id.id.hex}"
     description = "${local.description}"
 }
+```
+```hcl
 # --------------------------------------------------------
 # Role Bindings
 # --------------------------------------------------------
@@ -105,6 +131,8 @@ resource "confluent_role_binding" "clients_cluster_admin" {
     role_name = "CloudClusterAdmin"
     crn_pattern = confluent_kafka_cluster.simple_cluster.rbac_crn
 }
+```
+```hcl
 # --------------------------------------------------------
 # Credentials
 # --------------------------------------------------------
@@ -168,3 +196,4 @@ resource "confluent_api_key" "clients_kafka_cluster_key" {
         confluent_role_binding.clients_cluster_admin
     ]
 }
+```
